@@ -6,7 +6,8 @@ import Link from "next/link";
 import { login, getToken, setToken } from "@/lib/api-client";
 import { useAuth } from "@/app/components/AuthProvider";
 import { useErrorDismiss } from "@/hooks/useErrorDismiss";
-import { Sparkles } from "lucide-react";
+import { useWarmBackend } from "@/hooks/useWarmBackend";
+import { Sparkles, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function LoginPage() {
   const [error, setError] = useErrorDismiss();
   const [loading, setLoading] = useState(false);
   const [checked, setChecked] = useState(false);
+  const warming = useWarmBackend();
 
   useEffect(() => {
     if (getToken()) router.replace("/dashboard");
@@ -54,6 +56,12 @@ export default function LoginPage() {
           </div>
           <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>欢迎回来</h1>
           <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>登录以管理你的表单</p>
+          {warming && (
+            <p className="text-xs mt-2 flex items-center justify-center gap-1" style={{ color: "var(--muted-foreground)" }}>
+              <Loader2 className="size-3 animate-spin" />
+              服务器预热中...
+            </p>
+          )}
         </div>
 
         {error && (

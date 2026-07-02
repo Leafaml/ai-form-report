@@ -6,7 +6,8 @@ import Link from "next/link";
 import { register, verifyEmail, resendCode } from "@/lib/api-client";
 import { useAuth } from "@/app/components/AuthProvider";
 import { useErrorDismiss } from "@/hooks/useErrorDismiss";
-import { Sparkles, Mail, ArrowLeft } from "lucide-react";
+import { useWarmBackend } from "@/hooks/useWarmBackend";
+import { Sparkles, Mail, ArrowLeft, Loader2 } from "lucide-react";
 
 type Step = "form" | "verify";
 
@@ -21,6 +22,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [resentMsg, setResentMsg] = useState("");
+  const warming = useWarmBackend();
 
   const inputClass = "w-full px-4 py-2.5 text-sm rounded-lg border bg-background outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/15";
 
@@ -107,6 +109,12 @@ export default function SignupPage() {
           </div>
           <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>创建账号</h1>
           <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>注册后需验证邮箱</p>
+          {warming && (
+            <p className="text-xs mt-2 flex items-center justify-center gap-1" style={{ color: "var(--muted-foreground)" }}>
+              <Loader2 className="size-3 animate-spin" />
+              服务器预热中...
+            </p>
+          )}
         </div>
 
         {error && <div className="px-4 py-3 rounded-lg mb-4 text-sm bg-destructive/10 text-destructive border border-destructive/20">{error}</div>}
