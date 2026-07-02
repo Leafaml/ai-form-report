@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { analyzeForm } from "@/lib/api-client";
+import { useErrorDismiss } from "@/hooks/useErrorDismiss";
 
 interface AnalyzeData {
   formTitle: string;
@@ -22,7 +23,7 @@ interface AnalyzeData {
 export default function ReportClient({ formId }: { formId: string }) {
   const [contextText, setContextText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useErrorDismiss();
   const [data, setData] = useState<AnalyzeData | null>(null);
 
   async function runAnalysis() {

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { login, getToken, setToken } from "@/lib/api-client";
 import { useAuth } from "@/app/components/AuthProvider";
+import { useErrorDismiss } from "@/hooks/useErrorDismiss";
 import { Sparkles } from "lucide-react";
 
 export default function LoginPage() {
@@ -12,7 +13,7 @@ export default function LoginPage() {
   const { setAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useErrorDismiss();
   const [loading, setLoading] = useState(false);
   const [checked, setChecked] = useState(false);
 

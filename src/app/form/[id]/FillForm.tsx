@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { submitForm } from "@/lib/api-client";
+import { useErrorDismiss } from "@/hooks/useErrorDismiss";
 import { inputStyle, btnPrimary } from "@/app/components/ui";
 
 interface Field {
@@ -15,7 +16,7 @@ interface Field {
 export default function FillForm({ formId, fields }: { formId: string; fields: Field[] }) {
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useErrorDismiss();
   const [submitting, setSubmitting] = useState(false);
 
   function setAnswer(fieldId: string, value: string | string[]) {

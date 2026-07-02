@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { changePassword, updateProfile, uploadAvatar } from "@/lib/api-client";
 import { useAuth } from "@/app/components/AuthProvider";
+import { useErrorDismiss } from "@/hooks/useErrorDismiss";
 import { KeyRound, CheckCircle2, User, Camera, Upload, Loader2, Key } from "lucide-react";
 
 // DiceBear 头像风格选项
@@ -22,16 +23,16 @@ export default function SettingsPage() {
   const { user, refreshUser } = useAuth();
   const [nickname, setNickname] = useState(user?.nickname || "");
   const [avatarStyle, setAvatarStyle] = useState("initials");
-  const [nicknameMsg, setNicknameMsg] = useState("");
-  const [avatarMsg, setAvatarMsg] = useState("");
+  const [nicknameMsg, setNicknameMsg] = useErrorDismiss();
+  const [avatarMsg, setAvatarMsg] = useErrorDismiss();
   const [uploading, setUploading] = useState(false);
   const [apiKey, setApiKey] = useState(user?.deepseekApiKey || "");
-  const [apiKeyMsg, setApiKeyMsg] = useState("");
+  const [apiKeyMsg, setApiKeyMsg] = useErrorDismiss();
 
   // 密码
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [pwError, setPwError] = useState("");
+  const [pwError, setPwError] = useErrorDismiss();
   const [pwDone, setPwDone] = useState(false);
   const [pwLoading, setPwLoading] = useState(false);
 

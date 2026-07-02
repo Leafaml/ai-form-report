@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { register, verifyEmail, resendCode } from "@/lib/api-client";
 import { useAuth } from "@/app/components/AuthProvider";
+import { useErrorDismiss } from "@/hooks/useErrorDismiss";
 import { Sparkles, Mail, ArrowLeft } from "lucide-react";
 
 type Step = "form" | "verify";
@@ -16,7 +17,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useErrorDismiss();
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [resentMsg, setResentMsg] = useState("");

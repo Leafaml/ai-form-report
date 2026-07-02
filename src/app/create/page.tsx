@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getToken, createForm } from "@/lib/api-client";
+import { useErrorDismiss } from "@/hooks/useErrorDismiss";
 import { Spinner } from "@/app/components/States";
 
 type FieldType = "text" | "textarea" | "radio" | "checkbox";
@@ -18,7 +19,7 @@ export default function CreateFormPage() {
   const [description, setDescription] = useState("");
   const [fields, setFields] = useState<Field[]>([{ label: "", field_type: "text", options: [] }]);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useErrorDismiss();
   const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {

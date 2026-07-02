@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { listTrash, restoreForm, permanentDelete, getToken } from "@/lib/api-client";
 import { useRouter } from "next/navigation";
+import { useErrorDismiss } from "@/hooks/useErrorDismiss";
 import { Spinner } from "@/app/components/States";
 import { Trash2, RotateCcw, AlertTriangle } from "lucide-react";
 import type { FormData } from "@/lib/api-client";
@@ -12,7 +13,7 @@ export default function TrashPage() {
   const router = useRouter();
   const [items, setItems] = useState<FormData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useErrorDismiss();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const fetchTrash = useCallback(async () => {

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { listForms, getToken, deleteForm } from "@/lib/api-client";
+import { useErrorDismiss } from "@/hooks/useErrorDismiss";
 import { Spinner, ErrorState } from "@/app/components/States";
 import {
   FileText, Plus, Sparkles, TrendingUp, Wand2, Trash2, ArrowUpRight, Loader2,
@@ -58,7 +59,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [forms, setForms] = useState<FormData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useErrorDismiss();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 

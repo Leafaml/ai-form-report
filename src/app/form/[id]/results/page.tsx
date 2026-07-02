@@ -4,6 +4,7 @@ import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getResults, getToken, deleteForm } from "@/lib/api-client";
+import { useErrorDismiss } from "@/hooks/useErrorDismiss";
 import ExportButton from "@/app/components/ExportButton";
 import { Spinner } from "@/app/components/States";
 import { Trash2, Loader2 } from "lucide-react";
@@ -14,7 +15,7 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
   const router = useRouter();
   const [data, setData] = useState<FormResults | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useErrorDismiss();
   const [forbidden, setForbidden] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
