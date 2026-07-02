@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth } from "./AuthProvider";
-import { LayoutDashboard, FileText, Plus, Sparkles, LogOut, MessageCircle, Trash2, Settings } from "lucide-react";
+import { LayoutDashboard, FileText, Plus, Sparkles, MessageCircle, Trash2, Settings } from "lucide-react";
 
 const NAV_ITEMS = [
   { path: "/dashboard", label: "表单中心", icon: LayoutDashboard },
@@ -14,7 +13,6 @@ const NAV_ITEMS = [
 ];
 
 export function Sidebar() {
-  const { user, signOut } = useAuth();
   const pathname = usePathname();
 
   return (
@@ -67,38 +65,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-
-      {/* User footer */}
-      <div className="p-2 border-t" style={{ borderColor: "var(--border)" }}>
-        {user && (
-          <div className="flex items-center gap-2 px-2 py-2">
-            {user.avatar ? (
-              <img src={user.avatar} alt="" className="size-7 rounded-full shrink-0" />
-            ) : (
-              <div className="size-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-                style={{ background: "linear-gradient(135deg, #2160f9, #4f46e5)" }}>
-                {(user.nickname || user.email).charAt(0).toUpperCase()}
-              </div>
-            )}
-            <div className="min-w-0 flex-1">
-              <div className="text-xs font-medium truncate" style={{ color: "var(--foreground)" }}>
-                {user.nickname || user.email.split("@")[0]}
-              </div>
-              <div className="text-[10px] truncate" style={{ color: "var(--muted-foreground)" }}>
-                {user.email}
-              </div>
-            </div>
-            <button
-              onClick={signOut}
-              className="p-1 rounded hover:bg-muted transition-colors"
-              style={{ color: "var(--muted-foreground)" }}
-              title="退出"
-            >
-              <LogOut className="size-3.5" />
-            </button>
-          </div>
-        )}
-      </div>
     </aside>
   );
 }

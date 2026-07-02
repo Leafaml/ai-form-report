@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "./AuthProvider";
-import { Sparkles } from "lucide-react";
+import { Sparkles, LogOut } from "lucide-react";
 
 export function Navbar() {
   const { user, signOut } = useAuth();
@@ -38,11 +38,32 @@ export function Navbar() {
         {/* 右侧：用户区 */}
         <div className="flex items-center gap-3">
           {user ? (
-            <button onClick={signOut}
-              className="text-xs font-medium hover:opacity-70 transition-opacity"
-              style={{ color: "var(--muted-foreground)" }}>
-              退出
-            </button>
+            <div className="flex items-center gap-2">
+              {user.avatar ? (
+                <img src={user.avatar} alt="" className="size-7 rounded-full shrink-0" />
+              ) : (
+                <div className="size-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                  style={{ background: "linear-gradient(135deg, #2160f9, #4f46e5)" }}>
+                  {(user.nickname || user.email).charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div className="hidden sm:block min-w-0 max-w-[120px]">
+                <div className="text-xs font-medium truncate" style={{ color: "var(--foreground)" }}>
+                  {user.nickname || user.email.split("@")[0]}
+                </div>
+                <div className="text-[10px] truncate" style={{ color: "var(--muted-foreground)" }}>
+                  {user.email}
+                </div>
+              </div>
+              <button
+                onClick={signOut}
+                className="p-1.5 rounded-md hover:bg-muted transition-colors shrink-0"
+                style={{ color: "var(--muted-foreground)" }}
+                title="退出登录"
+              >
+                <LogOut className="size-4" />
+              </button>
+            </div>
           ) : !isAuthPage ? (
             <Link
               href="/auth/login"
