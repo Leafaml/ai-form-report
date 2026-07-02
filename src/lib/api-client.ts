@@ -43,13 +43,17 @@ async function request<T>(
     headers,
   });
 
-  // 401 自动清除 token
+  // 401：仅当携带了 token 才视为"过期"跳转，否则是正常的认证失败
   if (res.status === 401) {
-    clearToken();
-    if (typeof window !== "undefined") {
-      window.location.href = "/auth/login";
+    if (token) {
+      clearToken();
+      if (typeof window !== "undefined") {
+        window.location.href = "/auth/login";
+      }
+      throw new Error("登录已过期，请重新登录");
     }
-    throw new Error("登录已过期");
+    const body = await res.json().catch(() => ({ error: "邮箱或密码错误" }));
+    throw new Error(body.error || "邮箱或密码错误");
   }
 
   if (!res.ok) {
