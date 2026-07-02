@@ -53,9 +53,10 @@ export async function login(email: string, password: string) {
     throw new AppError(401, "邮箱或密码错误");
   }
 
-  if (!user.emailVerified) {
-    throw new AppError(403, "邮箱未验证，请先完成验证");
-  }
+  // TODO: 正式上线前启用邮箱验证
+  // if (!user.emailVerified) {
+  //   throw new AppError(403, "邮箱未验证，请先完成验证");
+  // }
 
   const token = signToken({ userId: user.id, email: user.email });
 
