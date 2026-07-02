@@ -27,11 +27,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3001
     container_name: ai-form-app
     ports:
       - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:3001
     restart: unless-stopped
     depends_on:
       - server

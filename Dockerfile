@@ -1,20 +1,19 @@
 # ── 阶段 1: 安装依赖 ──
 FROM node:24-alpine AS deps
 WORKDIR /app
-
 COPY package.json package-lock.json* ./
 RUN npm ci --omit=dev
 
 # ── 阶段 2: 构建 ──
 FROM node:24-alpine AS builder
 WORKDIR /app
-
 COPY package.json package-lock.json* ./
 RUN npm ci
-
 COPY . .
 
-ENV NEXT_PUBLIC_API_URL=http://localhost:3001
+# NEXT_PUBLIC_API_URL 由 Render 环境变量注入（构建时）
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 RUN npm run build
 
@@ -24,17 +23,13 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/next.config.ts ./next.config.ts
 
-USER nextjs
-
 EXPOSE 3000
 
-CMD ["npx", "next", "start", "-p", "3000"]
+# 使用 Render 注入的 PORT 环境变量
+CMD ["sh", "-c", "npx next start -p ${PORT:-3000}"]
