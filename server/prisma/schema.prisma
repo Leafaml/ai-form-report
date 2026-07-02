@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String             @id @default(uuid())
+  email           String             @unique
+  password        String
+  nickname        String?
+  avatar          String?
+  deepseekApiKey  String?            @map("deepseek_api_key")
+  emailVerified   Boolean            @default(false) @map("email_verified")
+  createdAt       DateTime           @default(now()) @map("created_at")
+  forms           Form[]
+  analyses        AnalysisCache[]
+
+  @@map("users")
+}
+
+model VerificationCode {
+  id        String   @id @default(uuid())
+  email     String
+  code      String
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email, code])
+  @@map("verification_codes")
+}
+
+model Form {
+  id          String      @id @default(uuid())
+  title       String
+  description String?
+  userId      String      @map("user_id")
+  deletedAt   DateTime?   @map("deleted_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  owner       User        @relation(fields: [userId], references: [id])
+  fields      FormField[]
+  submissions Submission[]
+  analyses    AnalysisCache[]
+
+  @@map("forms")
+}
+
+model FormField {
+  id        String        @id @default(uuid())
+  formId    String        @map("form_id")
+  label     String
+  fieldType FormFieldType @map("field_type")
+  options   Json?         @db.JsonB
+  sortOrder Int           @default(0) @map("sort_order")
+  form      Form          @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@map("form_fields")
+}
+
+enum FormFieldType {
+  text
+  textarea
+  radio
+  checkbox
+}
+
+model Submission {
+  id        String   @id @default(uuid())
+  formId    String   @map("form_id")
+  data      Json     @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at")
+  form      Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@map("submissions")
+}
+
+model AnalysisCache {
+  id              String   @id @default(uuid())
+  formId          String   @map("form_id")
+  userId          String   @map("user_id")
+  result          Json     @db.JsonB
+  submissionsHash String   @map("submissions_hash")
+  createdAt       DateTime @default(now()) @map("created_at")
+  form            Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@map("analysis_cache")
+}
