@@ -42,10 +42,13 @@ export default function AiAssistantPage() {
     setMessages(prev => [...prev, { id: assistantId, role: "assistant", content: "" }]);
 
     try {
+      // 传递最近 20 条历史消息，让 AI 记住上下文
+      const history = messages.slice(-20).map(m => ({ role: m.role, content: m.content }));
+
       const res = await fetch(`${API_BASE}/api/ai/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, history }),
       });
 
       const reader = res.body?.getReader();

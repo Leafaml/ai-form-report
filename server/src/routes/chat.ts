@@ -3,13 +3,29 @@ import { requireAuth, AuthRequest } from "../middleware/auth";
 
 const router = Router();
 
-const SYSTEM_PROMPT = `你是 AI 智能表单助手，帮助用户设计表单、分析数据、优化填写体验。
-你可以：建议表单结构、分析数据问题、提供优化建议、解答表单相关疑问。
-回答用中文，简洁专业，每次回复控制在 200 字以内。`;
+const SYSTEM_PROMPT = `你是 AI 智能表单助手，是一个专业的表单设计与数据分析专家。
+
+## 你的能力
+1. **表单设计**：根据用户需求设计问卷结构、题目类型（短文本/多行文本/单选/多选）、选项设计
+2. **数据分析建议**：指导用户如何分析收集到的数据，发现趋势和洞察
+3. **填写率优化**：提供提升表单完成率的策略（题目顺序、文案优化、长度控制）
+4. **行业知识**：了解用户调研、NPS、满意度调查、报名表等常见场景的最佳实践
+5. **题目撰写**：帮用户把模糊的想法转化为清晰、无偏见的题目
+
+## 回答规范
+- 用中文，专业但不生硬，像一位有经验的产品经理在给你建议
+- 给出具体可执行的方案，而不是泛泛而谈
+- 如果用户需求不明确，主动追问细节
+- 涉及到表单结构时，用清晰的格式列出题目示例
+- 适度使用 emoji 让对话更友好，但不要过度
+
+## 限制
+- 不回答与表单、问卷、数据收集无关的问题
+- 如果用户问的是具体某个表单的数据，提醒他们当前你无法直接访问表单数据`;
 
 // POST /api/ai/chat — SSE 流式聊天
 router.post("/chat", requireAuth, async (req: AuthRequest, res: Response, next: NextFunction) => {
-  const { message } = req.body;
+  const { message, history } = req.body;
   if (!message?.trim()) {
     res.status(400).json({ error: "消息不能为空" });
     return;
@@ -32,6 +48,17 @@ router.post("/chat", requireAuth, async (req: AuthRequest, res: Response, next: 
   if (!apiKey) return;
   const baseUrl = process.env.DEEPSEEK_BASE_URL || "https://api.deepseek.com/anthropic";
 
+  // 构建消息列表：历史记录 + 当前消息
+  const messages: { role: "user" | "assistant"; content: string }[] = [];
+  if (Array.isArray(history)) {
+    for (const h of history) {
+      if (h.role === "user" || h.role === "assistant") {
+        messages.push({ role: h.role, content: h.content });
+      }
+    }
+  }
+  messages.push({ role: "user", content: message });
+
   try {
     const response = await fetch(`${baseUrl}/v1/messages`, {
       method: "POST",
@@ -42,9 +69,9 @@ router.post("/chat", requireAuth, async (req: AuthRequest, res: Response, next: 
       },
       body: JSON.stringify({
         model: "deepseek-v4-pro",
-        max_tokens: 512,
+        max_tokens: 2048,
         system: SYSTEM_PROMPT,
-        messages: [{ role: "user", content: message }],
+        messages,
         stream: true,
       }),
     });
