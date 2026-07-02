@@ -74,7 +74,7 @@ async function request<T>(
 
 export interface AuthResponse {
   token: string;
-  user: { id: string; email: string; createdAt: string; nickname: null; avatar: null };
+  user: { id: string; email: string; nickname: string | null; avatar: string | null; deepseekApiKey: string | null; createdAt: string };
 }
 
 export function register(email: string, password: string) {

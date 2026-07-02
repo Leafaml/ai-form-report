@@ -67,6 +67,49 @@ export async function login(email: string, password: string) {
       email: user.email,
       nickname: user.nickname,
       avatar: user.avatar,
+      deepseekApiKey: user.deepseekApiKey ? `sk-...${user.deepseekApiKey.slice(-4)}` : null,
+      createdAt: user.createdAt,
+    },
+  };
+}
+
+/** 验证邮箱 */
+export async function verifyEmail(email: string, code: string) {
+  if (!email || !code) {
+    throw new AppError(400, "邮箱和验证码不能为空");
+  }
+
+  const record = await prisma.verificationCode.findFirst({
+    where: { email, code, used: false },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (!record) {
+    throw new AppError(400, "验证码错误");
+  }
+  if (record.expiresAt < new Date()) {
+    throw new AppError(400, "验证码已过期，请重新发送");
+  }
+
+  // 标记已使用 + 激活用户
+  await prisma.$transaction([
+    prisma.verificationCode.update({ where: { id: record.id }, data: { used: true } }),
+    prisma.user.update({ where: { email }, data: { emailVerified: true } }),
+  ]);
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) throw new AppError(500, "用户不存在");
+
+  const token = signToken({ userId: user.id, email: user.email });
+
+  return {
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      nickname: user.nickname,
+      avatar: user.avatar,
+      deepseekApiKey: user.deepseekApiKey ? `sk-...${user.deepseekApiKey.slice(-4)}` : null,
       createdAt: user.createdAt,
     },
   };
