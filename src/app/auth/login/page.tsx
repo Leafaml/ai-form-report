@@ -36,7 +36,7 @@ export default function LoginPage() {
     try {
       const res = await login(email, password);
       setToken(res.token);
-      setAuth(res.token, { ...res.user, nickname: null, avatar: null, deepseekApiKey: null });
+      setAuth(res.token, res.user);
       router.push("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "登录失败");

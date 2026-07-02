@@ -62,7 +62,13 @@ export async function login(email: string, password: string) {
 
   return {
     token,
-    user: { id: user.id, email: user.email, createdAt: user.createdAt },
+    user: {
+      id: user.id,
+      email: user.email,
+      nickname: user.nickname,
+      avatar: user.avatar,
+      createdAt: user.createdAt,
+    },
   };
 }
 
@@ -97,7 +103,13 @@ export async function verifyEmail(email: string, code: string) {
 
   return {
     token,
-    user: { id: user.id, email: user.email, createdAt: user.createdAt },
+    user: {
+      id: user.id,
+      email: user.email,
+      nickname: user.nickname,
+      avatar: user.avatar,
+      createdAt: user.createdAt,
+    },
   };
 }
 
